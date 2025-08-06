@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clerk Dashboard - QuickPass</title>
+  <link rel="stylesheet" href="{% static 'styles3.css' %}" />
+</head>
+<body>
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  <a href="{% url 'logout' %}" class="logout-btn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </a>
+
+  <h1>Clerk Dashboard</h1>
+
+  <form method="GET" action="{% url 'clerk_dashboard' %}">
+    <input type="text" name="query" placeholder="Enter Student Username or ID" required />
+    <button type="submit">Search</button>
+  </form>
+
+  {% if student %}
+    <div class="student-card">
+      <img src="{{ student.photo.url }}" alt="Photo" />
+      <div>
+        <p><strong>Name:</strong> {{ student.full_name }}</p>
+        <p><strong>Username:</strong> {{ student.user.username }}</p>
+        <p><strong>Course:</strong> {{ student.course }}</p>
+        <p><strong>Year:</strong> {{ student.academic_year }}</p>
+        <p><strong>Town:</strong> {{ student.town.name }}</p>
+        <p><strong>Status:</strong> 
+          <span class="status {% if renewed_this_month %}renewed{% else %}not-renewed{% endif %}">
+            {% if renewed_this_month %}
+              ✅ Renewed
+            {% else %}
+              ❌ Not Renewed
+            {% endif %}
+          </span>
+        </p>
+      </div>
+    </div>
+  {% elif query %}
+    <div class="p1">
+      <p>No student found for "{{ query }}"</p>
+    </div>
+  {% endif %}
+
+  <script>
+  // Load Dark Mode on page load if previously set
+  document.addEventListener('DOMContentLoaded', function () {
+    const darkMode = localStorage.getItem('darkMode');
+    if (darkMode === 'enabled') {
+      document.body.classList.add('dark-mode');
+      document.querySelector('.toggle-btn').textContent = '☀️ Light Mode';
+    }
+  });
+
+  // Toggle function
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+    document.querySelector('.toggle-btn').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  }
+</script>
+
+</body>
+</html>

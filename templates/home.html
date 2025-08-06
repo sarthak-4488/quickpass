@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickPass | Student Dashboard</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-bus"></i>
+        <span>QuickPass</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="active">
+          <a href="#">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <i class="fas fa-id-card"></i>
+            <span>View Pass</span>
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <a href="{% url 'logout' %}" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      
+      <!-- Top Nav -->
+      <div class="top-nav">
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+        <div class="user-info">
+          <span>{{ student.full_name }}</span>
+          <img src="{{ student.photo.url }}" alt="Profile Image" class="profile-img" />
+        </div>
+      </div>
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner animate-in">
+        <h1>Welcome, {{ student.full_name }} <span class="welcome-emoji">👋</span></h1>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-cards">
+        <div class="stat-card bg-primary animate-in" style="animation-delay: 0.1s">
+          <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div class="stat-info">
+            <h3>Primary Route</h3>
+            <p class="route">{{ student.town }}</p>
+            <small>Change in profile</small>
+          </div>
+        </div>
+      </div>
+        
+      <!-- Quick Actions -->
+      <h2 class="section-title animate-in">Quick Actions</h2>
+      <div class="action-buttons">
+        <a href={% url 'payment' %} class="action-btn renew animate-in" style="animation-delay: 0.3s">
+          <div class="action-icon">
+            <i class="fas fa-redo-alt"></i>
+          </div>
+          <span>Renew Pass</span>
+        </a>
+        <a href={% url 'find_bus' %} class="action-btn find animate-in" style="animation-delay: 0.4s">
+          <div class="action-icon">
+            <i class="fas fa-bus"></i>
+          </div>
+          <span>Find Bus</span>
+        </a>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Mobile menu toggle
+    document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('active');
+      document.querySelector('.main-content').classList.toggle('menu-open');
+    });
+
+    // Animate elements on scroll
+    const animateElements = document.querySelectorAll('.animate-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    animateElements.forEach(el => observer.observe(el));
+
+    // Hover effect
+    document.querySelectorAll('.action-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        btn.style.transform = 'translateY(-5px)';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'translateY(0)';
+      });
+    });
+  </script>
+</body>
+</html>
+

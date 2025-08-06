@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | QuickPass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --primary-light: #4895ef;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #ffffff;
+            --dark: #1e293b;
+            --gray: #94a3b8;
+            --light-gray: #f1f5f9;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark);
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: var(--light);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+
+        .auth-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .auth-logo i {
+            font-size: 1.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .auth-body {
+            padding: 2rem;
+        }
+
+        .auth-form .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .auth-form .input-field {
+            position: relative;
+        }
+
+        .auth-form .input-field i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.5rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            transition: var(--transition);
+            background-color: var(--light-gray);
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: var(--light);
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .auth-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .auth-form button:active {
+            transform: translateY(0);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .auth-footer a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8125rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .error-message i {
+            font-size: 0.875rem;
+        }
+
+        .field-errors {
+            background-color: rgba(247, 37, 133, 0.1);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--danger);
+        }
+
+        .field-errors ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .field-errors li {
+            margin-bottom: 0.25rem;
+            position: relative;
+        }
+
+        .field-errors li::before {
+            content: "•";
+            position: absolute;
+            left: -0.75rem;
+        }
+
+        .non-field-errors {
+            background-color: rgba(247, 37, 133, 0.1);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--danger);
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 1rem;
+            }
+            
+            .auth-card {
+                border-radius: 12px;
+            }
+            
+            .auth-header {
+                padding: 1.5rem;
+            }
+            
+            .auth-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-bus"></i>
+                    <span>QuickPass</span>
+                </div>
+                <div class="auth-title">Log In your account</div>
+            </div>
+            
+            <div class="auth-body">
+                {% if form.non_field_errors %}
+                    <div class="non-field-errors">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                
+                <form class="auth-form" method="POST">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <div class="input-field">
+                                {% if field.name == 'username' %}
+                                    <i class="fas fa-user"></i>
+                                {% elif field.name == 'email' %}
+                                    <i class="fas fa-envelope"></i>
+                                {% elif field.name == 'password1' or field.name == 'password2' %}
+                                    <i class="fas fa-lock"></i>
+                                {% endif %}
+                                {{ field }}
+                            </div>
+                            {% if field.errors %}
+                                <div class="field-errors">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <button type="submit" name="login">
+                        <i class="fas fa-user-plus"></i> log in
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    Don't have an account <a href="{% url 'register' %}">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

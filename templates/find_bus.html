@@ -1,0 +1,491 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickPass | Select Bus Route</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Base Variables ===== */
+    :root {
+      --primary: #4361ee;
+      --primary-light: #4895ef;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --dark: #2b2d42;
+      --light: #ffffff;
+      --gray: #adb5bd;
+      --light-gray: #f8f9fa;
+      --sidebar-width: 250px;
+      --top-nav-height: 70px;
+    }
+
+    /* ===== Base Styles ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light-gray);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ===== Dashboard Layout ===== */
+    .dashboard-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ===== Sidebar ===== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--light);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      position: fixed;
+      height: 100vh;
+      transition: transform 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .sidebar-header i {
+      margin-right: 0.75rem;
+      font-size: 1.25rem;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 1rem 0;
+    }
+
+    .sidebar-menu li {
+      margin: 0.25rem 0;
+    }
+
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 1.5rem;
+      color: var(--dark);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-menu a i {
+      margin-right: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-menu li.active a,
+    .sidebar-menu a:hover {
+      color: var(--primary);
+      background-color: rgba(67, 97, 238, 0.1);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 1rem;
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      color: var(--danger);
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: rgba(248, 37, 133, 0.1);
+    }
+
+    /* ===== Main Content ===== */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.menu-open {
+      margin-left: 0;
+    }
+
+    /* ===== Top Navigation ===== */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--light);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      height: var(--top-nav-height);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--dark);
+      cursor: pointer;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary-light);
+    }
+
+    /* ===== Bus Selection Page Specific Styles ===== */
+    .welcome-banner {
+      padding: 2rem;
+      margin: 1.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+    }
+
+    .welcome-banner h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-emoji {
+      animation: wave 2s infinite;
+      display: inline-block;
+      transform-origin: 70% 70%;
+    }
+
+    @keyframes wave {
+      0% { transform: rotate(0deg); }
+      10% { transform: rotate(-10deg); }
+      20% { transform: rotate(12deg); }
+      30% { transform: rotate(-10deg); }
+      40% { transform: rotate(9deg); }
+      50% { transform: rotate(0deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    /* Search Bar */
+    .search-container {
+      margin: 1.5rem;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      padding-left: 3rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 50px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+
+    /* Towns Grid */
+    .towns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 0 1.5rem 2rem;
+    }
+
+    .town-card {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      border-left: 4px solid var(--primary);
+    }
+
+    .town-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .town-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .town-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .town-price {
+      background: var(--primary);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .route-info {
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .select-btn {
+      display: inline-block;
+      width: 100%;
+      padding: 0.8rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .select-btn:hover {
+      background: var(--secondary);
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+    }
+
+    /* Animations */
+    .animate-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+
+    .animate-in.animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .mobile-menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .towns-grid {
+        grid-template-columns: 1fr;
+      }
+      .welcome-banner {
+        margin: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      .welcome-banner h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-bus"></i>
+        <span>QuickPass</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li>
+          <a href={% url 'home' %}>
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="active">
+          <a href="">
+            <i class="fas fa-bus"></i>
+            <span>Find Bus</span>
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <i class="fas fa-id-card"></i>
+            <span>View Pass</span>
+          </a>
+        </li>
+        <li>
+          <a href="">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <a href="" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Nav -->
+      <div class="top-nav">
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+        <div class="user-info">
+          <span>{{ student.full_name }}</span>
+          <img src="{{ student.photo.url }}" alt="Profile Image" class="profile-img" />
+        </div>
+      </div>
+
+      <!-- Page Header -->
+      <div class="welcome-banner animate-in">
+        <h1>Select Bus Route <span class="welcome-emoji">🚌</span></h1>
+        <p>Choose a town to view available buses and fares</p>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-container animate-in" style="animation-delay: 0.2s">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search for a town..." 
+          id="townSearch"
+          onkeyup="filterTowns()"
+        >
+      </div>
+
+      <!-- Towns Grid -->
+      <div class="towns-grid" id="townsContainer">
+        {% for town in towns %}
+        <div class="town-card animate-in" style="animation-delay: 0.{{ forloop.counter }}s">
+          <div class="town-header">
+            <span class="town-name">{{ town.name }}</span>
+            <span class="town-price"> ₹{{ town.price }}</span>
+          </div>
+          <p class="route-info">Direct route from college</p>
+          <a href="{% url 'bus_payment' town.id %}" class="select-btn">
+            Select This Route
+          </a>
+        </div>
+        {% empty %}
+        <div class="no-results animate-in">
+          <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+          <h3>No bus routes available</h3>
+          <p>Contact your administrator to add routes</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile menu toggle
+    document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('active');
+      document.querySelector('.main-content').classList.toggle('menu-open');
+    });
+
+    // Search functionality
+    function filterTowns() {
+      const input = document.getElementById('townSearch');
+      const filter = input.value.toUpperCase();
+      const container = document.getElementById('townsContainer');
+      const cards = container.getElementsByClassName('town-card');
+      
+      for (let i = 0; i < cards.length; i++) {
+        const name = cards[i].querySelector('.town-name').textContent;
+        if (name.toUpperCase().indexOf(filter) > -1) {
+          cards[i].style.display = "";
+        } else {
+          cards[i].style.display = "none";
+        }
+      }
+    }
+
+    // Animation on scroll
+    const animateElements = document.querySelectorAll('.animate-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    animateElements.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
