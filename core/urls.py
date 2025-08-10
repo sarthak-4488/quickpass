@@ -15,5 +15,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('clerk/dashboard/', views.clerk_dashboard, name='clerk_dashboard'),
     path('after-login/', views.after_login_redirect, name='after_login_redirect'),
+    path('profile/', views.profile, name='profile'),
+    
 ]
 

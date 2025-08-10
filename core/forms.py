@@ -23,3 +23,15 @@ class StudentRegistrationForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+# forms.py (add below your existing code)
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']  # include 'username' if you want
+
+class StudentUpdateForm(forms.ModelForm):
+    class Meta:
+        model = student
+        fields = ['full_name', 'course', 'academic_year', 'photo', 'town']

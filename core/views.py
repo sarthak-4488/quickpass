@@ -218,3 +218,35 @@ def after_login_redirect(request):
         return redirect('home')
     else:
         return redirect('login')
+
+
+# views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import UserUpdateForm, StudentUpdateForm
+from .models import student
+
+@login_required
+def profile(request):
+    # get the student's profile for the logged-in user
+    stu = student.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        s_form = StudentUpdateForm(request.POST, request.FILES, instance=stu)
+
+        if u_form.is_valid() and s_form.is_valid():
+            u_form.save()
+            s_form.save()
+            messages.success(request, "Your profile has been updated.")
+            return redirect('profile')  # reload page
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        s_form = StudentUpdateForm(instance=stu)
+
+    context = {
+        'u_form': u_form,
+        's_form': s_form
+    }
+    return render(request, 'profile.html', context)
