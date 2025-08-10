@@ -145,6 +145,7 @@ def bus_payment(request, town_id):
     return render(request, 'bus_payment.html', context)
 
 
+
 @never_cache
 @login_required(login_url='login')
 @student_required
@@ -163,13 +164,13 @@ def confirm_payment(request, town_id):
                 year=current_year,
                 is_renewed=True
             )
-            pdf_path = generate_pdf_pass(student_obj, current_month, current_year, selected_town)
-            return FileResponse(open(pdf_path, 'rb'), as_attachment=True, filename=f"{student_obj.user}_bus_pass.pdf")
+            messages.success(request, "Payment confirmed! Your bus pass has been created.")
+            # optionally generate PDF or do something else here
         else:
             messages.warning(request, "You have already renewed your pass for this month.")
-    
-    return redirect('home')
 
+    # Redirect back to the bus payment page so user sees messages there
+    return redirect('bus_payment', town_id=town_id)
 
 # -------------------------
 # CLERK DASHBOARD
