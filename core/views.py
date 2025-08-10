@@ -1,4 +1,3 @@
-# views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -9,11 +8,14 @@ from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.db import IntegrityError
 
-from .models import student as Student, Town, buspass
+from .models import student as Student, Clerk, Town, buspass
 from .forms import StudentRegistrationForm, LoginForm
 from .utils import generate_pdf_pass
+from .decorators import student_required, clerk_required
 
+# -------------------------
 # REGISTER VIEW
+# -------------------------
 def register(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST, request.FILES)
@@ -45,7 +47,9 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-# LOGIN VIEW
+# -------------------------
+# LOGIN VIEW WITH ROLE REDIRECT
+# -------------------------
 def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -55,7 +59,13 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                if hasattr(user, 'clerk'):
+                    return redirect('clerk_dashboard')
+                elif hasattr(user, 'student'):
+                    return redirect('home')
+                else:
+                    messages.error(request, 'User has no role assigned.')
+                    return redirect('login')
             else:
                 messages.error(request, 'Invalid username or password')
     else:
@@ -63,17 +73,20 @@ def user_login(request):
     return render(request, 'login.html', {'form': form})
 
 
-# HOME VIEW
+# -------------------------
+# STUDENT VIEWS
+# -------------------------
 @never_cache
 @login_required(login_url='login')
+@student_required
 def home(request):
     student_obj = Student.objects.filter(user=request.user).first()
     return render(request, 'home.html', {'student': student_obj})
 
 
-# PAYMENT VIEW
 @never_cache
 @login_required(login_url='login')
+@student_required
 def payment(request):
     student_obj = Student.objects.filter(user=request.user).first()
     if not student_obj:
@@ -102,18 +115,18 @@ def payment(request):
     return render(request, 'payment.html', context)
 
 
-# FIND BUS VIEW
 @never_cache
 @login_required(login_url='login')
+@student_required
 def find_bus(request):
     student_obj = Student.objects.filter(user=request.user).first()
     towns = Town.objects.all().order_by('name')
     return render(request, 'find_bus.html', {'student': student_obj, 'towns': towns})
 
 
-# BUS PAYMENT VIEW
 @never_cache
 @login_required(login_url='login')
+@student_required
 def bus_payment(request, town_id):
     student = Student.objects.filter(user=request.user).first()
     town = get_object_or_404(Town, id=town_id)
@@ -132,9 +145,9 @@ def bus_payment(request, town_id):
     return render(request, 'bus_payment.html', context)
 
 
-# CONFIRM PAYMENT VIEW
 @never_cache
 @login_required(login_url='login')
+@student_required
 def confirm_payment(request, town_id):
     if request.method == 'POST':
         student_obj = Student.objects.filter(user=request.user).first()
@@ -150,10 +163,7 @@ def confirm_payment(request, town_id):
                 year=current_year,
                 is_renewed=True
             )
-
-            # ✅ Pass selected_town to generate_pdf_pass
             pdf_path = generate_pdf_pass(student_obj, current_month, current_year, selected_town)
-
             return FileResponse(open(pdf_path, 'rb'), as_attachment=True, filename=f"{student_obj.user}_bus_pass.pdf")
         else:
             messages.warning(request, "You have already renewed your pass for this month.")
@@ -161,23 +171,12 @@ def confirm_payment(request, town_id):
     return redirect('home')
 
 
-
-
-# LOGOUT VIEW
-def logout_view(request):
-    logout(request)
-    return redirect('login')
-
-
-# DOWNLOAD PASS
-def download_pass(request, pass_id):
-    bus_pass = get_object_or_404(buspass, id=pass_id)
-    pdf_path = generate_pdf_pass(bus_pass)
-    return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
-
-
-# CLERK DASHBOARD VIEW
+# -------------------------
+# CLERK DASHBOARD
+# -------------------------
 @never_cache
+@login_required(login_url='login')
+@clerk_required
 def clerk_dashboard(request):
     query = request.GET.get('query')
     student = None
@@ -200,3 +199,22 @@ def clerk_dashboard(request):
         'query': query,
         'renewed_this_month': renewed_this_month
     })
+
+
+# -------------------------
+# LOGOUT
+# -------------------------
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='login')
+def after_login_redirect(request):
+    if hasattr(request.user, 'clerk'):
+        return redirect('clerk_dashboard')
+    elif hasattr(request.user, 'student'):
+        return redirect('home')
+    else:
+        return redirect('login')
