@@ -1,78 +1,87 @@
-﻿# QuickPass
+🚍 QuickPass
+QuickPass is a Django-based web application designed to simplify the process of applying, renewing, and managing student bus passes. It offers an easy-to-use interface for students and a dedicated admin dashboard for clerks to verify and approve passes.
 
-QuickPass is a Django web app to manage student bus passes.
+✨ Features
+User Authentication – Student registration and login system
 
-## Features
+Dynamic Pricing – Select town and view bus pass price automatically
 
-- User registration and login system
-- Selection of town with dynamic bus pass pricing
-- QR code integration for seamless payment
-- PDF generation of bus passes including student details and photo
-- Admin dashboard for clerks to verify payment and renew passes
+QR Code Payment – Integrated QR code for seamless UPI payments
 
-## Installation and Setup
+PDF Pass Generation – Download monthly bus passes with details & photo
 
-To get QuickPass running on your local machine, follow these steps:
+Clerk/Admin Dashboard – Search students, verify payments, and renew passes
 
-1. **Clone the repository:**
+🛠️ Tech Stack
+Backend: Python, Django
+
+Frontend: HTML5, CSS3, JavaScript, Bootstrap
+
+Database: SQLite (default, can be switched to MySQL/PostgreSQL)
+
+Others: Pillow (image handling), ReportLab (PDF generation)
+
+📦 Installation & Setup
+Follow these steps to run QuickPass locally:
+
+Clone the repository
+
 
 git clone https://github.com/sarthak-4488/quickpass.git
+cd quickpass
+Create and activate a virtual environment
+
+Windows (PowerShell):
 
 
-2. **Navigate to the project directory:**
+python -m venv env
+.\env\Scripts\activate
+macOS/Linux:
 
-   cd quickpass
-
-3. **Create and activate a virtual environment:**
-
-- On Windows (PowerShell):
-
-  ```
-  python -m venv env
-  .\env\Scripts\activate
-  ```
-
-- On macOS/Linux:
-
-  ```
-  python3 -m venv env
-  source env/bin/activate
-  ```
-
-4. **Install the required Python packages:**
-
-   pip install -r requirements.txt
+python3 -m venv env
+source env/bin/activate
+Install dependencies
 
 
-5. **Apply database migrations:**
-
-   python manage.py migrate
-
-
-6. **Start the Django development server:**
-
-   python manage.py runserver
+pip install -r requirements.txt
+Apply database migrations
 
 
-7. **Open your browser and visit:**
-
-   http://127.0.0.1:8000/
-
-
-## Usage
-
-- Register as a student with your details including name, course, academic year, and photo.
-- Choose your town to see the bus pass price.
-- Use the displayed QR code to make your payment.
-- After payment confirmation, download your monthly bus pass PDF.
-- Admins can log in to verify payments and renew passes for students.
-
-## License
-
-This project is licensed under the MIT License.
-
----
-
-Feel free to customize or improve this project. If you want help with deployment, adding features, or writing documentation, just ask!
+python manage.py migrate
+Run the development server
 
 
+python manage.py runserver
+Open in browser
+
+
+http://127.0.0.1:8000/
+📖 Usage
+Students:
+
+Register with your name, course, academic year, and photo.
+
+Select your town to see the bus pass price.
+
+Pay via the QR code displayed.
+
+Download your monthly bus pass as a PDF after payment confirmation.
+
+Clerks/Admins:
+
+Log in to view student details.
+
+Verify payment and manually renew passes if needed.
+
+📷 Screenshots
+(Add screenshots here to make it more visual)
+
+📜 License
+This project is licensed under the MIT License – feel free to use and modify.
+
+📬 Contact
+Author: Sarthak Revansiddha Chikhale
+
+GitHub: sarthak-4488
+
+Email: sarthakchikhale4488@gmail.com
